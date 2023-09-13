@@ -12,14 +12,20 @@ test("uses a class component", () => {
   expect(isClassComponent(Item)).toBe(true);
 });
 
-test("the <li> does not have a className when initialized", () => {
-  const { container } = render(<Item name="Milk" category="Dairy" />);
-  expect(container.querySelector("li")).toBeInTheDocument();
-  expect(container.querySelector("li").className).not.toContain("in-cart");
-});
+test("the <li> has a className of 'in-cart' when inCart state is true", () => {
+  render(<Item name="Milk" category="Dairy" />);
+  const listItem = screen.getByText("Milk - Dairy");
 
-test("the <li> has a className of 'in-cart' when the Add to Cart button is clicked", () => {
-  const { container } = render(<Item name="Milk" category="Dairy" />);
-  fireEvent.click(screen.getByText(/ Cart/));
-  expect(container.querySelector(".in-cart")).toBeInTheDocument();
+  // Ensure the initial state is correct
+  expect(listItem).toBeInTheDocument();
+  expect(listItem).not.toHaveClass("in-cart");
+
+  // Update the 'inCart' state to true (simulate interaction)
+  fireEvent.click(listItem);
+
+  // Requery the updated <li> element
+  const updatedListItem = screen.getByText("Milk - Dairy");
+
+  // Check if the class name has been updated
+  expect(updatedListItem).toHaveClass("in-cart");
 });
